@@ -36,7 +36,7 @@ const defaultData = [
 ]
 
 export default function App() {
-  const [categories, setCategories] = useState(() => loadData() ?? defaultData)
+  const [groups, setGroups] = useState(() => loadData() ?? defaultData)
   const [dialogCatId, setDialogCatId] = useState(null)
   const [dialogPhrase, setDialogPhrase] = useState('')
   const [isDark, setIsDark] = useState(() => loadTheme())
@@ -47,14 +47,14 @@ export default function App() {
   const [confirmOpening, setConfirmOpening] = useState(false)
   const [dialogClosing, setDialogClosing] = useState(false)
   const [dialogOpening, setDialogOpening] = useState(false)
-  const [addCategoryDialogOpen, setAddCategoryDialogOpen] = useState(false)
-  const [addCategoryClosing, setAddCategoryClosing] = useState(false)
-  const [addCategoryOpening, setAddCategoryOpening] = useState(false)
-  const [newCategoryName, setNewCategoryName] = useState('')
+  const [addGroupDialogOpen, setAddGroupDialogOpen] = useState(false)
+  const [addGroupClosing, setAddGroupClosing] = useState(false)
+  const [addGroupOpening, setAddGroupOpening] = useState(false)
+  const [newGroupName, setNewGroupName] = useState('')
 
   useEffect(() => {
-    saveData(categories)
-  }, [categories])
+    saveData(groups)
+  }, [groups])
 
   useEffect(() => {
     saveTheme(isDark)
@@ -78,14 +78,14 @@ export default function App() {
     }
   }, [dialogCatId, dialogClosing])
 
-  // Trigger enter animation when add category dialog opens
+  // Trigger enter animation when add group dialog opens
   useEffect(() => {
-    if (addCategoryDialogOpen && !addCategoryClosing) {
-      setAddCategoryOpening(true)
+    if (addGroupDialogOpen && !addGroupClosing) {
+      setAddGroupOpening(true)
     } else {
-      setAddCategoryOpening(false)
+      setAddGroupOpening(false)
     }
-  }, [addCategoryDialogOpen, addCategoryClosing])
+  }, [addGroupDialogOpen, addGroupClosing])
 
   function toggleTheme() {
     setIsDark(prev => !prev)
@@ -108,36 +108,36 @@ export default function App() {
     }, 200) // Match animation duration
   }
 
-  function closeAddCategoryDialog() {
-    setAddCategoryClosing(true)
+  function closeAddGroupDialog() {
+    setAddGroupClosing(true)
     setTimeout(() => {
-      setAddCategoryDialogOpen(false)
-      setNewCategoryName('')
-      setAddCategoryClosing(false)
+      setAddGroupDialogOpen(false)
+      setNewGroupName('')
+      setAddGroupClosing(false)
     }, 200) // Match animation duration
   }
 
-  function addCategory(name) {
+  function addGroup(name) {
     const n = (name || '').trim()
     if (!n) return
     const c = { id: uid(), name: n, phrases: [] }
-    setCategories(prev => [...prev, c])
+    setGroups(prev => [...prev, c])
   }
 
-  function promptAddCategory() {
-    setAddCategoryDialogOpen(true)
+  function promptAddGroup() {
+    setAddGroupDialogOpen(true)
   }
 
-  function deleteCategory(id) {
-    const category = categories.find(c => c.id === id)
-    const message = category
-      ? `Are you sure you want to delete the "${category.name}" category and all its phrases?`
-      : 'Are you sure you want to delete this category?'
+  function deleteGroup(id) {
+    const group = groups.find(c => c.id === id)
+    const message = group
+      ? `Are you sure you want to delete the "${group.name}" group and all its phrases?`
+      : 'Are you sure you want to delete this group?'
     
     setConfirmDialog({
       message,
       onConfirm: () => {
-        setCategories(prev => prev.filter(c => c.id !== id))
+        setGroups(prev => prev.filter(c => c.id !== id))
         closeConfirmDialog()
       }
     })
@@ -146,25 +146,25 @@ export default function App() {
   function addPhrase(catId, text) {
     const t = (text || '').trim()
     if (!t) return
-    setCategories(prev => prev.map(c => c.id === catId ? { ...c, phrases: [...c.phrases, { id: uid(), text: t }] } : c))
+    setGroups(prev => prev.map(c => c.id === catId ? { ...c, phrases: [...c.phrases, { id: uid(), text: t }] } : c))
   }
 
   function deletePhrase(catId, phraseId) {
     setConfirmDialog({
       message: 'Are you sure you want to delete this phrase?',
       onConfirm: () => {
-        setCategories(prev => prev.map(c => c.id === catId ? { ...c, phrases: c.phrases.filter(p => p.id !== phraseId) } : c))
+        setGroups(prev => prev.map(c => c.id === catId ? { ...c, phrases: c.phrases.filter(p => p.id !== phraseId) } : c))
         closeConfirmDialog()
       }
     })
   }
 
   function updatePhrase(catId, phraseId, text) {
-    setCategories(prev => prev.map(c => c.id === catId ? { ...c, phrases: c.phrases.map(p => p.id === phraseId ? { ...p, text } : p) } : c))
+    setGroups(prev => prev.map(c => c.id === catId ? { ...c, phrases: c.phrases.map(p => p.id === phraseId ? { ...p, text } : p) } : c))
   }
 
-  function renameCategory(id, newName) {
-    setCategories(prev => prev.map(c => c.id === id ? { ...c, name: newName } : c))
+  function renameGroup(id, newName) {
+    setGroups(prev => prev.map(c => c.id === id ? { ...c, name: newName } : c))
   }
 
   return (
@@ -198,11 +198,11 @@ export default function App() {
                   ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg hover:shadow-purple-500/50' 
                   : 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg hover:shadow-indigo-500/50'
               }`}
-              onClick={promptAddCategory}
+              onClick={promptAddGroup}
             >
               <span className="flex items-center gap-2">
                 <Icon icon="mdi:plus-circle" className="w-5 h-5" />
-                Add Category
+                Add Group
               </span>
             </button>
             <button 
@@ -233,7 +233,7 @@ export default function App() {
         <section className={`relative z-10 rounded-2xl flex-1 overflow-hidden ${isDark ? 'glass border border-purple-500/20' : 'glass-light border border-indigo-200/50'} shadow-2xl animate-slide-in`} style={{ animationDelay: '0.1s' }}>
           <div className="h-full overflow-auto p-4">
             <div className="grid gap-5" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(510px, 1fr))' }}>
-              {categories.map((cat, idx) => (
+              {groups.map((cat, idx) => (
                 <div 
                   key={cat.id} 
                   className={`group relative rounded-xl border transition-all duration-300 transform hover:scale-[1.02] ${
@@ -257,13 +257,13 @@ export default function App() {
                           onChange={e => setEditingCatName(e.target.value)}
                           onBlur={() => {
                             const v = (editingCatName || '').trim()
-                            if (v) renameCategory(cat.id, v)
+                            if (v) renameGroup(cat.id, v)
                             setEditingCatId(null)
                           }}
                           onKeyDown={e => {
                             if (e.key === 'Enter') {
                               const v = (editingCatName || '').trim()
-                              if (v) renameCategory(cat.id, v)
+                              if (v) renameGroup(cat.id, v)
                               setEditingCatId(null)
                             } else if (e.key === 'Escape') {
                               setEditingCatId(null)
@@ -298,9 +298,9 @@ export default function App() {
                         <Icon icon="mdi:plus" className="w-5 h-5" />
                       </button>
                       <button
-                        aria-label="Delete category"
-                        title="Delete category"
-                        onClick={() => deleteCategory(cat.id)}
+                        aria-label="Delete group"
+                        title="Delete group"
+                        onClick={() => deleteGroup(cat.id)}
                         className={`opacity-0 group-hover:opacity-100 transition-all duration-300 p-2 rounded-lg font-semibold transform hover:scale-110 ${
                           isDark 
                             ? 'text-red-400 hover:bg-red-900/30 hover:text-red-300' 
@@ -409,19 +409,19 @@ export default function App() {
         </div>
       )}
 
-      {/* Add Category Dialog */}
-      {addCategoryDialogOpen && (
+      {/* Add Group Dialog */}
+      {addGroupDialogOpen && (
         <div className={`fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity duration-200 ${
-          addCategoryClosing ? 'opacity-0' : addCategoryOpening ? 'opacity-100' : 'opacity-0'
+          addGroupClosing ? 'opacity-0' : addGroupOpening ? 'opacity-100' : 'opacity-0'
         }`}>
           <div className={`rounded-2xl shadow-2xl p-6 min-w-[420px] max-w-[90vw] flex flex-col gap-4 border transition-all duration-200 ${
             isDark 
               ? 'glass border-purple-500/30' 
               : 'bg-white border-indigo-200'
           } ${
-            addCategoryClosing 
+            addGroupClosing 
               ? 'opacity-0 scale-95 translate-y-4' 
-              : addCategoryOpening 
+              : addGroupOpening 
                 ? 'opacity-100 scale-100 translate-y-0' 
                 : 'opacity-0 scale-95 translate-y-4'
           }`}>
@@ -429,7 +429,7 @@ export default function App() {
               <div className={`p-2 rounded-lg ${isDark ? 'bg-purple-600' : 'bg-indigo-600'}`}>
                 <Icon icon="mdi:folder-plus" className="w-6 h-6 text-white" />
               </div>
-              <h2 className={`text-xl font-bold ${isDark ? 'text-purple-200' : 'text-indigo-900'}`}>Add New Category</h2>
+              <h2 className={`text-xl font-bold ${isDark ? 'text-purple-200' : 'text-indigo-900'}`}>Add New Group</h2>
             </div>
             <input
               type="text"
@@ -438,16 +438,16 @@ export default function App() {
                   ? 'bg-gray-800/50 text-gray-100 border-purple-500/50 focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20' 
                   : 'bg-gray-50 text-gray-900 border-indigo-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20'
               }`}
-              placeholder="Enter category name..."
-              value={newCategoryName}
+              placeholder="Enter group name..."
+              value={newGroupName}
               autoFocus
-              onChange={e => setNewCategoryName(e.target.value)}
+              onChange={e => setNewGroupName(e.target.value)}
               onKeyDown={e => {
-                if (e.key === 'Enter' && newCategoryName.trim()) {
-                  addCategory(newCategoryName)
-                  closeAddCategoryDialog()
+                if (e.key === 'Enter' && newGroupName.trim()) {
+                  addGroup(newGroupName)
+                  closeAddGroupDialog()
                 } else if (e.key === 'Escape') {
-                  closeAddCategoryDialog()
+                  closeAddGroupDialog()
                 }
               }}
             />
@@ -459,9 +459,9 @@ export default function App() {
                     : 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg hover:shadow-indigo-500/50'
                 }`}
                 onClick={() => {
-                  if (newCategoryName.trim()) {
-                    addCategory(newCategoryName)
-                    closeAddCategoryDialog()
+                  if (newGroupName.trim()) {
+                    addGroup(newGroupName)
+                    closeAddGroupDialog()
                   }
                 }}
               >
@@ -476,7 +476,7 @@ export default function App() {
                     ? 'bg-gray-700 text-gray-200 hover:bg-gray-600' 
                     : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                 }`}
-                onClick={closeAddCategoryDialog}
+onClick={closeAddGroupDialog}
               >
                 Cancel
               </button>
