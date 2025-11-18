@@ -47,6 +47,10 @@ export default function App() {
   const [confirmOpening, setConfirmOpening] = useState(false)
   const [dialogClosing, setDialogClosing] = useState(false)
   const [dialogOpening, setDialogOpening] = useState(false)
+  const [addCategoryDialogOpen, setAddCategoryDialogOpen] = useState(false)
+  const [addCategoryClosing, setAddCategoryClosing] = useState(false)
+  const [addCategoryOpening, setAddCategoryOpening] = useState(false)
+  const [newCategoryName, setNewCategoryName] = useState('')
 
   useEffect(() => {
     saveData(categories)
@@ -74,6 +78,15 @@ export default function App() {
     }
   }, [dialogCatId, dialogClosing])
 
+  // Trigger enter animation when add category dialog opens
+  useEffect(() => {
+    if (addCategoryDialogOpen && !addCategoryClosing) {
+      setAddCategoryOpening(true)
+    } else {
+      setAddCategoryOpening(false)
+    }
+  }, [addCategoryDialogOpen, addCategoryClosing])
+
   function toggleTheme() {
     setIsDark(prev => !prev)
   }
@@ -95,6 +108,15 @@ export default function App() {
     }, 200) // Match animation duration
   }
 
+  function closeAddCategoryDialog() {
+    setAddCategoryClosing(true)
+    setTimeout(() => {
+      setAddCategoryDialogOpen(false)
+      setNewCategoryName('')
+      setAddCategoryClosing(false)
+    }, 200) // Match animation duration
+  }
+
   function addCategory(name) {
     const n = (name || '').trim()
     if (!n) return
@@ -103,8 +125,7 @@ export default function App() {
   }
 
   function promptAddCategory() {
-    const name = window.prompt('New category name:')
-    if (name && name.trim()) addCategory(name.trim())
+    setAddCategoryDialogOpen(true)
   }
 
   function deleteCategory(id) {
@@ -380,6 +401,82 @@ export default function App() {
                     : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                 }`}
                 onClick={closeAddPhraseDialog}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Category Dialog */}
+      {addCategoryDialogOpen && (
+        <div className={`fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity duration-200 ${
+          addCategoryClosing ? 'opacity-0' : addCategoryOpening ? 'opacity-100' : 'opacity-0'
+        }`}>
+          <div className={`rounded-2xl shadow-2xl p-6 min-w-[420px] max-w-[90vw] flex flex-col gap-4 border transition-all duration-200 ${
+            isDark 
+              ? 'glass border-purple-500/30' 
+              : 'bg-white border-indigo-200'
+          } ${
+            addCategoryClosing 
+              ? 'opacity-0 scale-95 translate-y-4' 
+              : addCategoryOpening 
+                ? 'opacity-100 scale-100 translate-y-0' 
+                : 'opacity-0 scale-95 translate-y-4'
+          }`}>
+            <div className="flex items-center gap-3">
+              <div className={`p-2 rounded-lg ${isDark ? 'bg-purple-600' : 'bg-indigo-600'}`}>
+                <Icon icon="mdi:folder-plus" className="w-6 h-6 text-white" />
+              </div>
+              <h2 className={`text-xl font-bold ${isDark ? 'text-purple-200' : 'text-indigo-900'}`}>Add New Category</h2>
+            </div>
+            <input
+              type="text"
+              className={`w-full p-4 border-2 rounded-xl transition-all outline-none ${
+                isDark 
+                  ? 'bg-gray-800/50 text-gray-100 border-purple-500/50 focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20' 
+                  : 'bg-gray-50 text-gray-900 border-indigo-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20'
+              }`}
+              placeholder="Enter category name..."
+              value={newCategoryName}
+              autoFocus
+              onChange={e => setNewCategoryName(e.target.value)}
+              onKeyDown={e => {
+                if (e.key === 'Enter' && newCategoryName.trim()) {
+                  addCategory(newCategoryName)
+                  closeAddCategoryDialog()
+                } else if (e.key === 'Escape') {
+                  closeAddCategoryDialog()
+                }
+              }}
+            />
+            <div className="flex gap-3 justify-end mt-2">
+              <button
+                className={`px-6 py-2.5 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 ${
+                  isDark 
+                    ? 'bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg hover:shadow-purple-500/50' 
+                    : 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg hover:shadow-indigo-500/50'
+                }`}
+                onClick={() => {
+                  if (newCategoryName.trim()) {
+                    addCategory(newCategoryName)
+                    closeAddCategoryDialog()
+                  }
+                }}
+              >
+                <span className="flex items-center gap-2">
+                  <Icon icon="mdi:check" className="w-5 h-5" />
+                  Add
+                </span>
+              </button>
+              <button
+                className={`px-6 py-2.5 rounded-xl font-semibold transition-all duration-300 ${
+                  isDark 
+                    ? 'bg-gray-700 text-gray-200 hover:bg-gray-600' 
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+                onClick={closeAddCategoryDialog}
               >
                 Cancel
               </button>
