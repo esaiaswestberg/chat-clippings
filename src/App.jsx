@@ -43,6 +43,10 @@ export default function App() {
   const [editingCatId, setEditingCatId] = useState(null)
   const [editingCatName, setEditingCatName] = useState('')
   const [confirmDialog, setConfirmDialog] = useState(null) // { message, onConfirm }
+  const [confirmClosing, setConfirmClosing] = useState(false)
+  const [confirmOpening, setConfirmOpening] = useState(false)
+  const [dialogClosing, setDialogClosing] = useState(false)
+  const [dialogOpening, setDialogOpening] = useState(false)
 
   useEffect(() => {
     saveData(categories)
@@ -52,8 +56,43 @@ export default function App() {
     saveTheme(isDark)
   }, [isDark])
 
+  // Trigger enter animation when confirm dialog opens
+  useEffect(() => {
+    if (confirmDialog && !confirmClosing) {
+      setConfirmOpening(true)
+    } else {
+      setConfirmOpening(false)
+    }
+  }, [confirmDialog, confirmClosing])
+
+  // Trigger enter animation when add phrase dialog opens
+  useEffect(() => {
+    if (dialogCatId !== null && !dialogClosing) {
+      setDialogOpening(true)
+    } else {
+      setDialogOpening(false)
+    }
+  }, [dialogCatId, dialogClosing])
+
   function toggleTheme() {
     setIsDark(prev => !prev)
+  }
+
+  function closeConfirmDialog() {
+    setConfirmClosing(true)
+    setTimeout(() => {
+      setConfirmDialog(null)
+      setConfirmClosing(false)
+    }, 200) // Match animation duration
+  }
+
+  function closeAddPhraseDialog() {
+    setDialogClosing(true)
+    setTimeout(() => {
+      setDialogCatId(null)
+      setDialogPhrase('')
+      setDialogClosing(false)
+    }, 200) // Match animation duration
   }
 
   function addCategory(name) {
@@ -78,7 +117,7 @@ export default function App() {
       message,
       onConfirm: () => {
         setCategories(prev => prev.filter(c => c.id !== id))
-        setConfirmDialog(null)
+        closeConfirmDialog()
       }
     })
   }
@@ -94,7 +133,7 @@ export default function App() {
       message: 'Are you sure you want to delete this phrase?',
       onConfirm: () => {
         setCategories(prev => prev.map(c => c.id === catId ? { ...c, phrases: c.phrases.filter(p => p.id !== phraseId) } : c))
-        setConfirmDialog(null)
+        closeConfirmDialog()
       }
     })
   }
@@ -281,11 +320,19 @@ export default function App() {
 
       {/* Dialog for adding phrase */}
       {dialogCatId !== null && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in">
-          <div className={`rounded-2xl shadow-2xl p-6 min-w-[420px] max-w-[90vw] flex flex-col gap-4 border animate-slide-in ${
+        <div className={`fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity duration-200 ${
+          dialogClosing ? 'opacity-0' : dialogOpening ? 'opacity-100' : 'opacity-0'
+        }`}>
+          <div className={`rounded-2xl shadow-2xl p-6 min-w-[420px] max-w-[90vw] flex flex-col gap-4 border transition-all duration-200 ${
             isDark 
               ? 'glass border-purple-500/30' 
               : 'bg-white border-indigo-200'
+          } ${
+            dialogClosing 
+              ? 'opacity-0 scale-95 translate-y-4' 
+              : dialogOpening 
+                ? 'opacity-100 scale-100 translate-y-0' 
+                : 'opacity-0 scale-95 translate-y-4'
           }`}>
             <div className="flex items-center gap-3">
               <div className={`p-2 rounded-lg ${isDark ? 'bg-purple-600' : 'bg-indigo-600'}`}>
@@ -304,7 +351,7 @@ export default function App() {
               autoFocus
               onChange={e => setDialogPhrase(e.target.value)}
               onKeyDown={e => {
-                if (e.key === 'Escape') setDialogCatId(null)
+                if (e.key === 'Escape') closeAddPhraseDialog()
               }}
             />
             <div className="flex gap-3 justify-end mt-2">
@@ -317,7 +364,7 @@ export default function App() {
                 onClick={() => {
                   if (dialogPhrase.trim()) {
                     addPhrase(dialogCatId, dialogPhrase)
-                    setDialogCatId(null)
+                    closeAddPhraseDialog()
                   }
                 }}
               >
@@ -332,7 +379,7 @@ export default function App() {
                     ? 'bg-gray-700 text-gray-200 hover:bg-gray-600' 
                     : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                 }`}
-                onClick={() => setDialogCatId(null)}
+                onClick={closeAddPhraseDialog}
               >
                 Cancel
               </button>
@@ -343,11 +390,19 @@ export default function App() {
 
       {/* Confirmation Dialog */}
       {confirmDialog && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in">
-          <div className={`rounded-2xl shadow-2xl p-6 min-w-[420px] max-w-[90vw] flex flex-col gap-4 border animate-slide-in ${
+        <div className={`fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity duration-200 ${
+          confirmClosing ? 'opacity-0' : confirmOpening ? 'opacity-100' : 'opacity-0'
+        }`}>
+          <div className={`rounded-2xl shadow-2xl p-6 min-w-[420px] max-w-[90vw] flex flex-col gap-4 border transition-all duration-200 ${
             isDark 
               ? 'glass border-purple-500/30' 
               : 'bg-white border-indigo-200'
+          } ${
+            confirmClosing 
+              ? 'opacity-0 scale-95 translate-y-4' 
+              : confirmOpening 
+                ? 'opacity-100 scale-100 translate-y-0' 
+                : 'opacity-0 scale-95 translate-y-4'
           }`}>
             <div className="flex items-center gap-3">
               <div className={`p-2 rounded-lg ${isDark ? 'bg-red-600' : 'bg-red-500'}`}>
@@ -378,7 +433,7 @@ export default function App() {
                     ? 'bg-gray-700 text-gray-200 hover:bg-gray-600' 
                     : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                 }`}
-                onClick={() => setConfirmDialog(null)}
+                onClick={closeConfirmDialog}
               >
                 Cancel
               </button>
