@@ -1,4 +1,4 @@
-import { STORAGE_KEY, THEME_KEY, LANGUAGE_KEY } from '../constants/storage'
+import { STORAGE_KEY, THEME_KEY, LANGUAGE_KEY, PRIVACY_FOOTER_KEY } from '../constants/storage'
 
 export function loadData() {
   try {
@@ -28,4 +28,13 @@ export function loadLanguage() {
 
 export function saveLanguage(lang) {
   localStorage.setItem(LANGUAGE_KEY, lang)
+}
+
+export function loadPrivacyFooter() {
+  const value = localStorage.getItem(PRIVACY_FOOTER_KEY)
+  return value === null ? true : value === 'true'
+}
+
+export function savePrivacyFooter(isVisible) {
+  localStorage.setItem(PRIVACY_FOOTER_KEY, isVisible ? 'true' : 'false')
 }
