@@ -1,16 +1,16 @@
 # Build stage
-FROM node:20-alpine AS builder
+FROM oven/bun:alpine AS builder
 
 WORKDIR /app
 
 # Copy all files
 COPY . .
 
-# Install dependencies with legacy peer deps to handle version conflicts
-RUN npm install --legacy-peer-deps
+# Install dependencies
+RUN bun install
 
 # Build the application
-RUN npm run build
+RUN bun run build
 
 # Production stage
 FROM nginx:alpine
