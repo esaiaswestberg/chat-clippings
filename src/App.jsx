@@ -139,8 +139,15 @@ export default function App() {
   const [addGroupClosing, setAddGroupClosing] = useState(false)
   const [addGroupOpening, setAddGroupOpening] = useState(false)
   const [newGroupName, setNewGroupName] = useState('')
+  const [languageDropdownOpen, setLanguageDropdownOpen] = useState(false)
 
   const t = translations[language] || translations.en
+
+  const languageOptions = [
+    { code: 'en', name: 'English', flag: '🇬🇧' },
+    { code: 'sv', name: 'Svenska', flag: '🇸🇪' },
+    { code: 'no', name: 'Norsk', flag: '🇳🇴' }
+  ]
 
   useEffect(() => {
     saveData(groups)
@@ -183,13 +190,6 @@ export default function App() {
 
   function toggleTheme() {
     setIsDark(prev => !prev)
-  }
-
-  function cycleLanguage() {
-    const languages = ['en', 'sv', 'no']
-    const currentIndex = languages.indexOf(language)
-    const nextIndex = (currentIndex + 1) % languages.length
-    setLanguage(languages[nextIndex])
   }
 
   function closeConfirmDialog() {
@@ -278,7 +278,7 @@ export default function App() {
           <div className={`absolute -bottom-8 left-20 w-72 h-72 ${isDark ? 'bg-indigo-500' : 'bg-purple-400'} rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-pulse`} style={{ animationDelay: '4s' }}></div>
         </div>
 
-        <header className="flex justify-between items-center gap-3 relative z-10 animate-slide-in">
+        <header className="flex justify-between items-center gap-3 relative z-50 animate-slide-in">
           <div className="flex items-center gap-3">
             <div className={`p-2 rounded-xl ${isDark ? 'bg-gradient-to-br from-purple-500 to-pink-500' : 'bg-gradient-to-br from-indigo-500 to-purple-500'} shadow-lg`}>
               <Icon icon="mdi:clipboard-text" className="w-8 h-8 text-white" />
@@ -306,20 +306,62 @@ export default function App() {
                 {t.addGroup}
               </span>
             </button>
-            <button 
-              className={`px-4 py-2.5 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 ${
-                isDark 
-                  ? 'glass text-white border border-purple-500/30 hover:border-purple-400/50' 
-                  : 'glass-light text-gray-700 border border-indigo-200 hover:border-indigo-300'
-              }`}
-              onClick={cycleLanguage}
-              title={t.switchLanguage}
-            >
-              <span className="flex items-center gap-2">
-                <Icon icon="mdi:web" className="w-5 h-5" />
-                {language.toUpperCase()}
-              </span>
-            </button>
+            <div className="relative z-50">
+              <button 
+                className={`px-4 py-2.5 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 ${
+                  isDark 
+                    ? 'glass text-white border border-purple-500/30 hover:border-purple-400/50' 
+                    : 'glass-light text-gray-700 border border-indigo-200 hover:border-indigo-300'
+                }`}
+                onClick={() => setLanguageDropdownOpen(!languageDropdownOpen)}
+                title={t.switchLanguage}
+              >
+                <span className="flex items-center gap-2">
+                  <Icon icon="mdi:web" className="w-5 h-5" />
+                  {language.toUpperCase()}
+                </span>
+              </button>
+              {languageDropdownOpen && (
+                <>
+                  {/* Backdrop to close dropdown */}
+                  <div 
+                    className="fixed inset-0 z-40" 
+                    onClick={() => setLanguageDropdownOpen(false)}
+                  />
+                  {/* Dropdown menu */}
+                  <div className={`absolute right-0 mt-2 w-48 rounded-xl shadow-2xl border z-50 overflow-hidden animate-slide-in ${
+                    isDark 
+                      ? 'glass border-purple-500/30' 
+                      : 'bg-white border-indigo-200'
+                  }`}>
+                    {languageOptions.map(lang => (
+                      <button
+                        key={lang.code}
+                        className={`w-full px-4 py-3 flex items-center gap-3 transition-all duration-200 ${
+                          language === lang.code
+                            ? isDark
+                              ? 'bg-purple-600/30 text-purple-200'
+                              : 'bg-indigo-100 text-indigo-900'
+                            : isDark
+                              ? 'text-gray-200 hover:bg-purple-900/20'
+                              : 'text-gray-700 hover:bg-indigo-50'
+                        }`}
+                        onClick={() => {
+                          setLanguage(lang.code)
+                          setLanguageDropdownOpen(false)
+                        }}
+                      >
+                        <span className="text-xl">{lang.flag}</span>
+                        <span className="font-medium">{lang.name}</span>
+                        {language === lang.code && (
+                          <Icon icon="mdi:check" className="w-5 h-5 ml-auto" />
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
             <button 
               className={`px-4 py-2.5 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 ${
                 isDark 
