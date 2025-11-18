@@ -1,0 +1,7 @@
+services:
+  chat-clippings:
+    image: ghcr.io/esaiaswestberg/chat-clippings:latest
+    container_name: chat-clippings
+    ports:
+      - "8080:80"
+    restart: unless-stopped
