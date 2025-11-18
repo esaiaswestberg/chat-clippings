@@ -71,7 +71,7 @@ export default function GroupCard({
           <button
             aria-label={t.addPhrase}
             title={t.addPhrase}
-            className={`p-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-110 ${
+            className={`opacity-0 group-hover:opacity-100 p-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-110 ${
               isDark 
                 ? 'bg-purple-600 text-white hover:bg-purple-500 shadow-md hover:shadow-purple-500/50' 
                 : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-md hover:shadow-indigo-500/50'
