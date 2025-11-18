@@ -114,6 +114,56 @@ const translations = {
     copied: 'Kopiert!',
     deletePhrase: 'Slett frase',
     switchLanguage: 'Bytt språk'
+  },
+  da: {
+    appTitle: 'Chat Klip',
+    appSubtitle: 'Organiser dine almindelige sætninger',
+    addGroup: 'Tilføj Gruppe',
+    light: 'Lys',
+    dark: 'Mørk',
+    addNewGroup: 'Tilføj Ny Gruppe',
+    addNewPhrase: 'Tilføj Ny Sætning',
+    confirmDeletion: 'Bekræft Sletning',
+    deleteGroupConfirm: (name) => `Er du sikker på, at du vil slette gruppen "${name}" og alle dens sætninger?`,
+    deleteGroupConfirmGeneric: 'Er du sikker på, at du vil slette denne gruppe?',
+    deletePhraseConfirm: 'Er du sikker på, at du vil slette denne sætning?',
+    delete: 'Slet',
+    cancel: 'Annuller',
+    add: 'Tilføj',
+    addPhrase: 'Tilføj sætning',
+    deleteGroup: 'Slet gruppe',
+    enterGroupName: 'Indtast gruppenavn...',
+    enterPhrase: 'Indtast din sætning her...',
+    noPhrasesYet: 'Ingen sætninger endnu. Klik på + for at tilføje en!',
+    clickToCopy: 'Klik for at kopiere • Dobbeltklik for at redigere',
+    copied: 'Kopieret!',
+    deletePhrase: 'Slet sætning',
+    switchLanguage: 'Skift sprog'
+  },
+  fi: {
+    appTitle: 'Chat Leikkeet',
+    appSubtitle: 'Järjestä yleiset lauseesi',
+    addGroup: 'Lisää Ryhmä',
+    light: 'Vaalea',
+    dark: 'Tumma',
+    addNewGroup: 'Lisää Uusi Ryhmä',
+    addNewPhrase: 'Lisää Uusi Lause',
+    confirmDeletion: 'Vahvista Poisto',
+    deleteGroupConfirm: (name) => `Haluatko varmasti poistaa ryhmän "${name}" ja kaikki sen lauseet?`,
+    deleteGroupConfirmGeneric: 'Haluatko varmasti poistaa tämän ryhmän?',
+    deletePhraseConfirm: 'Haluatko varmasti poistaa tämän lauseen?',
+    delete: 'Poista',
+    cancel: 'Peruuta',
+    add: 'Lisää',
+    addPhrase: 'Lisää lause',
+    deleteGroup: 'Poista ryhmä',
+    enterGroupName: 'Syötä ryhmän nimi...',
+    enterPhrase: 'Kirjoita lauseesi tähän...',
+    noPhrasesYet: 'Ei lauseita vielä. Napsauta + lisätäksesi!',
+    clickToCopy: 'Napsauta kopioidaksesi • Kaksoisnapsauta muokataksesi',
+    copied: 'Kopioitu!',
+    deletePhrase: 'Poista lause',
+    switchLanguage: 'Vaihda kieltä'
   }
 }
 
@@ -146,7 +196,9 @@ export default function App() {
   const languageOptions = [
     { code: 'en', name: 'English', flag: '🇬🇧' },
     { code: 'sv', name: 'Svenska', flag: '🇸🇪' },
-    { code: 'no', name: 'Norsk', flag: '🇳🇴' }
+    { code: 'no', name: 'Norsk', flag: '🇳🇴' },
+    { code: 'da', name: 'Dansk', flag: '🇩🇰' },
+    { code: 'fi', name: 'Suomi', flag: '🇫🇮' }
   ]
 
   useEffect(() => {
