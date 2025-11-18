@@ -3,6 +3,7 @@ import { Icon } from '@iconify/react'
 
 const STORAGE_KEY = 'chat-clippings-data-v1'
 const THEME_KEY = 'chat-clippings-theme'
+const LANGUAGE_KEY = 'chat-clippings-language'
 
 function uid() {
   return Math.random().toString(36).slice(2, 9)
@@ -30,6 +31,92 @@ function saveTheme(isDark) {
   localStorage.setItem(THEME_KEY, isDark ? 'dark' : 'light')
 }
 
+function loadLanguage() {
+  return localStorage.getItem(LANGUAGE_KEY) || 'en'
+}
+
+function saveLanguage(lang) {
+  localStorage.setItem(LANGUAGE_KEY, lang)
+}
+
+const translations = {
+  en: {
+    appTitle: 'Chat Clippings',
+    appSubtitle: 'Organize your common phrases',
+    addGroup: 'Add Group',
+    light: 'Light',
+    dark: 'Dark',
+    addNewGroup: 'Add New Group',
+    addNewPhrase: 'Add New Phrase',
+    confirmDeletion: 'Confirm Deletion',
+    deleteGroupConfirm: (name) => `Are you sure you want to delete the "${name}" group and all its phrases?`,
+    deleteGroupConfirmGeneric: 'Are you sure you want to delete this group?',
+    deletePhraseConfirm: 'Are you sure you want to delete this phrase?',
+    delete: 'Delete',
+    cancel: 'Cancel',
+    add: 'Add',
+    addPhrase: 'Add phrase',
+    deleteGroup: 'Delete group',
+    enterGroupName: 'Enter group name...',
+    enterPhrase: 'Enter your phrase here...',
+    noPhrasesYet: 'No phrases yet. Click + to add one!',
+    clickToCopy: 'Click to copy • Double-click to edit',
+    copied: 'Copied!',
+    deletePhrase: 'Delete phrase',
+    switchLanguage: 'Switch language'
+  },
+  sv: {
+    appTitle: 'Chat Klipp',
+    appSubtitle: 'Organisera dina vanliga fraser',
+    addGroup: 'Lägg till Grupp',
+    light: 'Ljus',
+    dark: 'Mörk',
+    addNewGroup: 'Lägg till Ny Grupp',
+    addNewPhrase: 'Lägg till Ny Fras',
+    confirmDeletion: 'Bekräfta Borttagning',
+    deleteGroupConfirm: (name) => `Är du säker på att du vill ta bort gruppen "${name}" och alla dess fraser?`,
+    deleteGroupConfirmGeneric: 'Är du säker på att du vill ta bort denna grupp?',
+    deletePhraseConfirm: 'Är du säker på att du vill ta bort denna fras?',
+    delete: 'Ta bort',
+    cancel: 'Avbryt',
+    add: 'Lägg till',
+    addPhrase: 'Lägg till fras',
+    deleteGroup: 'Ta bort grupp',
+    enterGroupName: 'Ange gruppnamn...',
+    enterPhrase: 'Skriv din fras här...',
+    noPhrasesYet: 'Inga fraser än. Klicka på + för att lägga till en!',
+    clickToCopy: 'Klicka för att kopiera • Dubbelklicka för att redigera',
+    copied: 'Kopierad!',
+    deletePhrase: 'Ta bort fras',
+    switchLanguage: 'Byt språk'
+  },
+  no: {
+    appTitle: 'Chat Utklipp',
+    appSubtitle: 'Organiser dine vanlige fraser',
+    addGroup: 'Legg til Gruppe',
+    light: 'Lys',
+    dark: 'Mørk',
+    addNewGroup: 'Legg til Ny Gruppe',
+    addNewPhrase: 'Legg til Ny Frase',
+    confirmDeletion: 'Bekreft Sletting',
+    deleteGroupConfirm: (name) => `Er du sikker på at du vil slette gruppen "${name}" og alle fraser?`,
+    deleteGroupConfirmGeneric: 'Er du sikker på at du vil slette denne gruppen?',
+    deletePhraseConfirm: 'Er du sikker på at du vil slette denne frasen?',
+    delete: 'Slett',
+    cancel: 'Avbryt',
+    add: 'Legg til',
+    addPhrase: 'Legg til frase',
+    deleteGroup: 'Slett gruppe',
+    enterGroupName: 'Skriv inn gruppenavn...',
+    enterPhrase: 'Skriv inn frasen din her...',
+    noPhrasesYet: 'Ingen fraser ennå. Klikk + for å legge til en!',
+    clickToCopy: 'Klikk for å kopiere • Dobbeltklikk for å redigere',
+    copied: 'Kopiert!',
+    deletePhrase: 'Slett frase',
+    switchLanguage: 'Bytt språk'
+  }
+}
+
 const defaultData = [
   { id: uid(), name: 'Greetings', phrases: [{ id: uid(), text: 'Hello!' }, { id: uid(), text: 'Hi there' }] },
   { id: uid(), name: 'Sign-offs', phrases: [{ id: uid(), text: 'Take care' }, { id: uid(), text: 'Thanks!' }] }
@@ -40,6 +127,7 @@ export default function App() {
   const [dialogCatId, setDialogCatId] = useState(null)
   const [dialogPhrase, setDialogPhrase] = useState('')
   const [isDark, setIsDark] = useState(() => loadTheme())
+  const [language, setLanguage] = useState(() => loadLanguage())
   const [editingCatId, setEditingCatId] = useState(null)
   const [editingCatName, setEditingCatName] = useState('')
   const [confirmDialog, setConfirmDialog] = useState(null) // { message, onConfirm }
@@ -52,6 +140,8 @@ export default function App() {
   const [addGroupOpening, setAddGroupOpening] = useState(false)
   const [newGroupName, setNewGroupName] = useState('')
 
+  const t = translations[language] || translations.en
+
   useEffect(() => {
     saveData(groups)
   }, [groups])
@@ -59,6 +149,10 @@ export default function App() {
   useEffect(() => {
     saveTheme(isDark)
   }, [isDark])
+
+  useEffect(() => {
+    saveLanguage(language)
+  }, [language])
 
   // Trigger enter animation when confirm dialog opens
   useEffect(() => {
@@ -89,6 +183,13 @@ export default function App() {
 
   function toggleTheme() {
     setIsDark(prev => !prev)
+  }
+
+  function cycleLanguage() {
+    const languages = ['en', 'sv', 'no']
+    const currentIndex = languages.indexOf(language)
+    const nextIndex = (currentIndex + 1) % languages.length
+    setLanguage(languages[nextIndex])
   }
 
   function closeConfirmDialog() {
@@ -131,8 +232,8 @@ export default function App() {
   function deleteGroup(id) {
     const group = groups.find(c => c.id === id)
     const message = group
-      ? `Are you sure you want to delete the "${group.name}" group and all its phrases?`
-      : 'Are you sure you want to delete this group?'
+      ? t.deleteGroupConfirm(group.name)
+      : t.deleteGroupConfirmGeneric
     
     setConfirmDialog({
       message,
@@ -151,7 +252,7 @@ export default function App() {
 
   function deletePhrase(catId, phraseId) {
     setConfirmDialog({
-      message: 'Are you sure you want to delete this phrase?',
+      message: t.deletePhraseConfirm,
       onConfirm: () => {
         setGroups(prev => prev.map(c => c.id === catId ? { ...c, phrases: c.phrases.filter(p => p.id !== phraseId) } : c))
         closeConfirmDialog()
@@ -184,10 +285,10 @@ export default function App() {
             </div>
             <div>
               <h1 className={`text-3xl font-bold bg-gradient-to-r ${isDark ? 'from-purple-400 via-pink-400 to-indigo-400' : 'from-indigo-600 via-purple-600 to-pink-600'} bg-clip-text text-transparent`}>
-                Chat Clippings
+                {t.appTitle}
               </h1>
               <p className={`text-sm ${isDark ? 'text-gray-400' : 'text-gray-600'}`}>
-                Organize your common phrases
+                {t.appSubtitle}
               </p>
             </div>
           </div>
@@ -202,7 +303,21 @@ export default function App() {
             >
               <span className="flex items-center gap-2">
                 <Icon icon="mdi:plus-circle" className="w-5 h-5" />
-                Add Group
+                {t.addGroup}
+              </span>
+            </button>
+            <button 
+              className={`px-4 py-2.5 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 ${
+                isDark 
+                  ? 'glass text-white border border-purple-500/30 hover:border-purple-400/50' 
+                  : 'glass-light text-gray-700 border border-indigo-200 hover:border-indigo-300'
+              }`}
+              onClick={cycleLanguage}
+              title={t.switchLanguage}
+            >
+              <span className="flex items-center gap-2">
+                <Icon icon="mdi:web" className="w-5 h-5" />
+                {language.toUpperCase()}
               </span>
             </button>
             <button 
@@ -217,12 +332,12 @@ export default function App() {
                 {isDark ? (
                   <>
                     <Icon icon="mdi:white-balance-sunny" className="w-5 h-5" />
-                    Light
+                    {t.light}
                   </>
                 ) : (
                   <>
                     <Icon icon="mdi:moon-waning-crescent" className="w-5 h-5" />
-                    Dark
+                    {t.dark}
                   </>
                 )}
               </span>
@@ -286,8 +401,8 @@ export default function App() {
                     </div>
                     <div className="flex gap-2 items-center">
                       <button
-                        aria-label="Add phrase"
-                        title="Add phrase"
+                        aria-label={t.addPhrase}
+                        title={t.addPhrase}
                         className={`p-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-110 ${
                           isDark 
                             ? 'bg-purple-600 text-white hover:bg-purple-500 shadow-md hover:shadow-purple-500/50' 
@@ -298,8 +413,8 @@ export default function App() {
                         <Icon icon="mdi:plus" className="w-5 h-5" />
                       </button>
                       <button
-                        aria-label="Delete group"
-                        title="Delete group"
+                        aria-label={t.deleteGroup}
+                        title={t.deleteGroup}
                         onClick={() => deleteGroup(cat.id)}
                         className={`opacity-0 group-hover:opacity-100 transition-all duration-300 p-2 rounded-lg font-semibold transform hover:scale-110 ${
                           isDark 
@@ -317,13 +432,13 @@ export default function App() {
                     {cat.phrases.length === 0 ? (
                       <div className={`text-center py-8 ${isDark ? 'text-gray-500' : 'text-gray-400'}`}>
                         <Icon icon="mdi:text-box-outline" className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                        <p className="text-sm">No phrases yet. Click + to add one!</p>
+                        <p className="text-sm">{t.noPhrasesYet}</p>
                       </div>
                     ) : (
                       <div className="flex flex-col gap-1">
                         {cat.phrases.map((p, idx) => (
                           <React.Fragment key={p.id}>
-                            <PhraseRow phrase={p} catId={cat.id} onDelete={deletePhrase} onUpdate={updatePhrase} isDark={isDark} />
+                            <PhraseRow phrase={p} catId={cat.id} onDelete={deletePhrase} onUpdate={updatePhrase} isDark={isDark} t={t} />
                             {idx < cat.phrases.length - 1 && (
                               <hr className={`${isDark ? 'border-purple-500/20' : 'border-indigo-200/40'}`} />
                             )}
@@ -359,7 +474,7 @@ export default function App() {
               <div className={`p-2 rounded-lg ${isDark ? 'bg-purple-600' : 'bg-indigo-600'}`}>
                 <Icon icon="mdi:text-box-plus" className="w-6 h-6 text-white" />
               </div>
-              <h2 className={`text-xl font-bold ${isDark ? 'text-purple-200' : 'text-indigo-900'}`}>Add New Phrase</h2>
+              <h2 className={`text-xl font-bold ${isDark ? 'text-purple-200' : 'text-indigo-900'}`}>{t.addNewPhrase}</h2>
             </div>
             <textarea
               className={`w-full p-4 border-2 rounded-xl resize-y min-h-[120px] transition-all outline-none ${
@@ -367,7 +482,7 @@ export default function App() {
                   ? 'bg-gray-800/50 text-gray-100 border-purple-500/50 focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20' 
                   : 'bg-gray-50 text-gray-900 border-indigo-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20'
               }`}
-              placeholder="Enter your phrase here..."
+              placeholder={t.enterPhrase}
               value={dialogPhrase}
               autoFocus
               onChange={e => setDialogPhrase(e.target.value)}
@@ -391,7 +506,7 @@ export default function App() {
               >
                 <span className="flex items-center gap-2">
                   <Icon icon="mdi:check" className="w-5 h-5" />
-                  Add
+                  {t.add}
                 </span>
               </button>
               <button
@@ -402,7 +517,7 @@ export default function App() {
                 }`}
                 onClick={closeAddPhraseDialog}
               >
-                Cancel
+                {t.cancel}
               </button>
             </div>
           </div>
@@ -429,7 +544,7 @@ export default function App() {
               <div className={`p-2 rounded-lg ${isDark ? 'bg-purple-600' : 'bg-indigo-600'}`}>
                 <Icon icon="mdi:folder-plus" className="w-6 h-6 text-white" />
               </div>
-              <h2 className={`text-xl font-bold ${isDark ? 'text-purple-200' : 'text-indigo-900'}`}>Add New Group</h2>
+              <h2 className={`text-xl font-bold ${isDark ? 'text-purple-200' : 'text-indigo-900'}`}>{t.addNewGroup}</h2>
             </div>
             <input
               type="text"
@@ -438,7 +553,7 @@ export default function App() {
                   ? 'bg-gray-800/50 text-gray-100 border-purple-500/50 focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20' 
                   : 'bg-gray-50 text-gray-900 border-indigo-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20'
               }`}
-              placeholder="Enter group name..."
+              placeholder={t.enterGroupName}
               value={newGroupName}
               autoFocus
               onChange={e => setNewGroupName(e.target.value)}
@@ -467,7 +582,7 @@ export default function App() {
               >
                 <span className="flex items-center gap-2">
                   <Icon icon="mdi:check" className="w-5 h-5" />
-                  Add
+                  {t.add}
                 </span>
               </button>
               <button
@@ -478,7 +593,7 @@ export default function App() {
                 }`}
 onClick={closeAddGroupDialog}
               >
-                Cancel
+                {t.cancel}
               </button>
             </div>
           </div>
@@ -505,7 +620,7 @@ onClick={closeAddGroupDialog}
               <div className={`p-2 rounded-lg ${isDark ? 'bg-red-600' : 'bg-red-500'}`}>
                 <Icon icon="mdi:alert-circle" className="w-6 h-6 text-white" />
               </div>
-              <h2 className={`text-xl font-bold ${isDark ? 'text-purple-200' : 'text-indigo-900'}`}>Confirm Deletion</h2>
+              <h2 className={`text-xl font-bold ${isDark ? 'text-purple-200' : 'text-indigo-900'}`}>{t.confirmDeletion}</h2>
             </div>
             <p className={`text-base ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
               {confirmDialog.message}
@@ -521,7 +636,7 @@ onClick={closeAddGroupDialog}
               >
                 <span className="flex items-center gap-2">
                   <Icon icon="mdi:delete" className="w-5 h-5" />
-                  Delete
+                  {t.delete}
                 </span>
               </button>
               <button
@@ -532,7 +647,7 @@ onClick={closeAddGroupDialog}
                 }`}
                 onClick={closeConfirmDialog}
               >
-                Cancel
+                {t.cancel}
               </button>
             </div>
           </div>
@@ -542,7 +657,7 @@ onClick={closeAddGroupDialog}
   )
 }
 
-function PhraseRow({ phrase, catId, onDelete, onUpdate, isDark }) {
+function PhraseRow({ phrase, catId, onDelete, onUpdate, isDark, t }) {
   const [editing, setEditing] = useState(false)
   const [newText, setNewText] = useState(phrase.text)
   const [justCopied, setJustCopied] = useState(false)
@@ -617,7 +732,7 @@ function PhraseRow({ phrase, catId, onDelete, onUpdate, isDark }) {
                 ? 'text-gray-100 hover:bg-purple-900/30' 
                 : 'text-gray-900 hover:bg-indigo-50'
             }`}
-            title="Click to copy • Double-click to edit"
+            title={t.clickToCopy}
             onClick={handleCopy}
           >
             {phrase.text}
@@ -631,7 +746,7 @@ function PhraseRow({ phrase, catId, onDelete, onUpdate, isDark }) {
               }`}>
                 <span className="flex items-center gap-1">
                   <Icon icon="mdi:check-circle" className="w-4 h-4" />
-                  Copied!
+                  {t.copied}
                 </span>
               </div>
             )}
@@ -646,8 +761,8 @@ function PhraseRow({ phrase, catId, onDelete, onUpdate, isDark }) {
         </div>
       )}
       <button
-        aria-label="Delete phrase"
-        title="Delete phrase"
+        aria-label={t.deletePhrase}
+        title={t.deletePhrase}
         onClick={() => onDelete(catId, phrase.id)}
         className={`ml-2 p-2 rounded-lg font-semibold transition-all duration-300 transform hover:scale-110 ${
           isDark 
