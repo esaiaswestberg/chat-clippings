@@ -42,6 +42,7 @@ export default function App() {
   const [isDark, setIsDark] = useState(() => loadTheme())
   const [editingCatId, setEditingCatId] = useState(null)
   const [editingCatName, setEditingCatName] = useState('')
+  const [confirmDialog, setConfirmDialog] = useState(null) // { message, onConfirm }
 
   useEffect(() => {
     saveData(categories)
@@ -68,11 +69,17 @@ export default function App() {
   }
 
   function deleteCategory(id) {
-    setCategories(prev => prev.filter(c => c.id !== id))
-    setNewPhraseByCat(prev => {
-      const copy = { ...prev }
-      delete copy[id]
-      return copy
+    const category = categories.find(c => c.id === id)
+    const message = category
+      ? `Are you sure you want to delete the "${category.name}" category and all its phrases?`
+      : 'Are you sure you want to delete this category?'
+    
+    setConfirmDialog({
+      message,
+      onConfirm: () => {
+        setCategories(prev => prev.filter(c => c.id !== id))
+        setConfirmDialog(null)
+      }
     })
   }
 
@@ -83,7 +90,13 @@ export default function App() {
   }
 
   function deletePhrase(catId, phraseId) {
-    setCategories(prev => prev.map(c => c.id === catId ? { ...c, phrases: c.phrases.filter(p => p.id !== phraseId) } : c))
+    setConfirmDialog({
+      message: 'Are you sure you want to delete this phrase?',
+      onConfirm: () => {
+        setCategories(prev => prev.map(c => c.id === catId ? { ...c, phrases: c.phrases.filter(p => p.id !== phraseId) } : c))
+        setConfirmDialog(null)
+      }
+    })
   }
 
   function updatePhrase(catId, phraseId, text) {
@@ -320,6 +333,52 @@ export default function App() {
                     : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
                 }`}
                 onClick={() => setDialogCatId(null)}
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Confirmation Dialog */}
+      {confirmDialog && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 animate-fade-in">
+          <div className={`rounded-2xl shadow-2xl p-6 min-w-[420px] max-w-[90vw] flex flex-col gap-4 border animate-slide-in ${
+            isDark 
+              ? 'glass border-purple-500/30' 
+              : 'bg-white border-indigo-200'
+          }`}>
+            <div className="flex items-center gap-3">
+              <div className={`p-2 rounded-lg ${isDark ? 'bg-red-600' : 'bg-red-500'}`}>
+                <Icon icon="mdi:alert-circle" className="w-6 h-6 text-white" />
+              </div>
+              <h2 className={`text-xl font-bold ${isDark ? 'text-purple-200' : 'text-indigo-900'}`}>Confirm Deletion</h2>
+            </div>
+            <p className={`text-base ${isDark ? 'text-gray-300' : 'text-gray-700'}`}>
+              {confirmDialog.message}
+            </p>
+            <div className="flex gap-3 justify-end mt-2">
+              <button
+                className={`px-6 py-2.5 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 ${
+                  isDark 
+                    ? 'bg-red-600 text-white shadow-lg hover:bg-red-500 hover:shadow-red-500/50' 
+                    : 'bg-red-600 text-white shadow-lg hover:bg-red-700 hover:shadow-red-500/50'
+                }`}
+                onClick={confirmDialog.onConfirm}
+              >
+                <span className="flex items-center gap-2">
+                  <Icon icon="mdi:delete" className="w-5 h-5" />
+                  Delete
+                </span>
+              </button>
+              <button
+                className={`px-6 py-2.5 rounded-xl font-semibold transition-all duration-300 ${
+                  isDark 
+                    ? 'bg-gray-700 text-gray-200 hover:bg-gray-600' 
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+                onClick={() => setConfirmDialog(null)}
               >
                 Cancel
               </button>
