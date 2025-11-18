@@ -349,12 +349,16 @@ function PhraseRow({ phrase, catId, onDelete, onUpdate, isDark }) {
     setTimeout(() => setJustCopied(false), 2000)
   }
 
+  // Calculate rows based on number of lines in text
+  const textRows = Math.max(2, Math.min(10, newText.split('\n').length))
+
   return (
     <div className="flex items-center justify-between py-2 group/phrase">
       {editing ? (
         <div className="flex-1 flex gap-2 animate-fade-in">
-          <input
-            className={`flex-1 px-4 py-2.5 rounded-lg border-2 transition-all outline-none ${
+          <textarea
+            rows={textRows}
+            className={`flex-1 px-4 py-2.5 rounded-lg border-2 transition-all outline-none resize-y max-h-[200px] overflow-auto ${
               isDark 
                 ? 'bg-gray-800/50 text-gray-100 border-purple-500/50 focus:border-purple-400 focus:ring-2 focus:ring-purple-400/20' 
                 : 'bg-white text-gray-900 border-indigo-300 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20'
@@ -363,9 +367,7 @@ function PhraseRow({ phrase, catId, onDelete, onUpdate, isDark }) {
             onChange={e => setNewText(e.target.value)}
             onBlur={handleUpdate}
             onKeyDown={e => {
-              if (e.key === 'Enter') {
-                handleUpdate()
-              } else if (e.key === 'Escape') {
+              if (e.key === 'Escape') {
                 setEditing(false)
                 setNewText(phrase.text)
               }
@@ -399,7 +401,7 @@ function PhraseRow({ phrase, catId, onDelete, onUpdate, isDark }) {
           onDoubleClick={() => setEditing(true)}
         >
           <div
-            className={`px-4 py-3 rounded-lg whitespace-pre-line transition-all duration-200 relative group ${
+            className={`px-4 py-3 rounded-lg whitespace-pre-line transition-all duration-200 relative group max-h-[200px] overflow-auto ${
               isDark 
                 ? 'text-gray-100 hover:bg-purple-900/30' 
                 : 'text-gray-900 hover:bg-indigo-50'
