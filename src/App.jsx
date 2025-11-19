@@ -97,7 +97,7 @@ export default function App() {
 
   return (
     <div className={`flex h-screen overflow-hidden ${isDark ? 'dark bg-gradient-to-br from-gray-900 via-purple-900 to-violet-900' : 'bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50'}`}>
-      <main className="flex-1 p-6 flex flex-col gap-6 relative">
+      <main className="flex-1 p-3 sm:p-6 flex flex-col gap-3 sm:gap-6 relative">
         <BackgroundAnimation isDark={isDark} />
 
         <Header 
@@ -109,9 +109,9 @@ export default function App() {
           t={t}
         />
 
-        <section className={`relative z-10 rounded-2xl flex-1 overflow-hidden ${isDark ? 'glass border border-purple-500/20' : 'glass-light border border-indigo-200/50'} shadow-2xl animate-slide-in`} style={{ animationDelay: '0.1s' }}>
-          <div className="h-full overflow-auto p-4">
-            <div className="grid gap-5" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(510px, 1fr))' }}>
+        <section className={`relative z-10 rounded-xl sm:rounded-2xl flex-1 overflow-hidden ${isDark ? 'glass border border-purple-500/20' : 'glass-light border border-indigo-200/50'} shadow-2xl animate-slide-in`} style={{ animationDelay: '0.1s' }}>
+          <div className="h-full overflow-auto p-2 sm:p-4">
+            <div className="grid gap-3 sm:gap-5" style={{ gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))' }}>
               {groups.map((group, idx) => (
                 <GroupCard
                   key={group.id}
@@ -131,10 +131,10 @@ export default function App() {
         </section>
 
         {isPrivacyFooterVisible ? (
-          <footer className={`relative z-10 rounded-xl px-4 py-3 ${isDark ? 'glass border border-purple-500/20' : 'glass-light border border-indigo-200/50'} shadow-lg animate-slide-in`} style={{ animationDelay: '0.2s' }}>
-            <div className="flex items-center justify-center gap-2 text-sm">
+          <footer className={`relative z-10 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 ${isDark ? 'glass border border-purple-500/20' : 'glass-light border border-indigo-200/50'} shadow-lg animate-slide-in`} style={{ animationDelay: '0.2s' }}>
+            <div className="flex items-center justify-center gap-2 text-xs sm:text-sm">
               <svg 
-                className={`w-4 h-4 ${isDark ? 'text-purple-400' : 'text-indigo-500'}`}
+                className={`w-5 h-5 sm:w-4 sm:h-4 flex-shrink-0 ${isDark ? 'text-purple-400' : 'text-indigo-500'}`}
                 fill="none" 
                 stroke="currentColor" 
                 viewBox="0 0 24 24"
@@ -149,7 +149,7 @@ export default function App() {
                 className={`ml-2 p-1 rounded-lg transition-all hover:scale-110 ${isDark ? 'hover:bg-purple-500/20 text-purple-300' : 'hover:bg-indigo-100 text-indigo-500'}`}
                 title="Hide privacy notice"
               >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>

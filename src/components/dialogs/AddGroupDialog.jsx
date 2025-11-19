@@ -33,10 +33,10 @@ export default function AddGroupDialog({ isOpen, onAdd, onCancel, isDark, t }) {
   if (!isOpen) return null
 
   return (
-    <div className={`fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity duration-200 ${
+    <div className={`fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 transition-opacity duration-200 p-4 ${
       closing ? 'opacity-0' : opening ? 'opacity-100' : 'opacity-0'
     }`}>
-      <div className={`rounded-2xl shadow-2xl p-6 min-w-[420px] max-w-[90vw] flex flex-col gap-4 border transition-all duration-200 ${
+      <div className={`rounded-xl sm:rounded-2xl shadow-2xl p-4 sm:p-6 w-[95vw] sm:w-auto sm:min-w-[420px] max-w-[90vw] flex flex-col gap-3 sm:gap-4 border transition-all duration-200 ${
         isDark 
           ? 'glass border-purple-500/30' 
           : 'bg-white border-indigo-200'
